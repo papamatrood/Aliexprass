@@ -154,4 +154,12 @@ class Address
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return  $this->fullName . '[SPR]' .
+            $this->country  . '[SPR]' .
+            $this->city  . '[SPR]' .
+            $this->phone;
+    }
 }

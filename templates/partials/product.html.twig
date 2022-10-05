@@ -6,8 +6,9 @@
             </a>
             <div class="product_action_box">
                 <ul class="list_none pr_action_btn">
-                    <li class="add-to-cart"><a href="#"><i class="icon-basket-loaded"></i>
-                            Add To Cart</a></li>
+                    <li class="add-to-cart">
+                        <a href="{{path('add_cart', {'id' : product.id})}}"><i class="icon-basket-loaded"></i>Add To Cart</a>
+                    </li>
                     <li><a href="" class=""><i class="icon-shuffle"></i></a></li>
                     <li><a href="" class=""><i class="icon-magnifier-add"></i></a></li>
                     <li><a href="#"><i class="icon-heart"></i></a></li>

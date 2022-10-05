@@ -98,34 +98,39 @@
                         </div>
                         <div class="search_overlay"></div>
                     </li>
+                    {% set cartData = app.session.get('cartData') %}
+                    {% if cartData.products is defined %}
                     <li class="dropdown cart_dropdown"><a class="nav-link cart_trigger" href="#"
-                            data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">2</span></a>
+                            data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">{{cartData.data.QUANTITIES}}</span></a>
                         <div class="cart_box dropdown-menu dropdown-menu-right">
                             <ul class="cart_list">
+                                {% for item in cartData.products %}
                                 <li>
-                                    <a href="#" class="item_remove"><i class="ion-close"></i></a>
-                                    <a href="#"><img src="https://placehold.it/300" alt="cart_thumb1">Variable product
-                                        001</a>
-                                    <span class="cart_quantity"> 1 x <span class="cart_amount"> <span
-                                                class="price_symbole">$</span></span>78.00</span>
+                                    <a href="{{path('delete_all_cart', {'id' : item.product.id})}}"
+                                        class="item_remove"><i class="ion-close"></i></a>
+                                    <a href="#"><img src="/uploads/images/product/{{item.product.image}}"
+                                            alt="{{item.product.name}}">{{item.product.name}}</a>
+                                    <span class="cart_quantity"> {{item.quantity}} x <span class="cart_amount"> <span
+                                                class="price_symbole"></span></span>{{item.product.price|number_format(0,
+                                        '', ' ')}} FCFA</span>
                                 </li>
-                                <li>
-                                    <a href="#" class="item_remove"><i class="ion-close"></i></a>
-                                    <a href="#"><img src="https://placehold.it/300" alt="cart_thumb1">Variable product
-                                        001</a>
-                                    <span class="cart_quantity"> 1 x <span class="cart_amount"> <span
-                                                class="price_symbole">$</span></span>78.00</span>
-                                </li>
-
+                                {% endfor %}
                             </ul>
                             <div class="cart_footer">
                                 <p class="cart_total"><strong>Subtotal:</strong> <span class="cart_price"> <span
-                                            class="price_symbole">$</span></span>159.00</p>
-                                <p class="cart_buttons"><a href="#" class="btn btn-fill-line rounded-0 view-cart">View
-                                        Cart</a><a href="#" class="btn btn-fill-out rounded-0 checkout">Checkout</a></p>
+                                            class="price_symbole"></span></span>{{cartData.data.THT|number_format(0, '', ' ')}} FCFA</p>
+                                <p class="cart_buttons"><a href="{{path('cart')}}" class="btn btn-fill-line rounded-0 view-cart">View
+                                        Cart</a><a href="{{path('checkout')}}" class="btn btn-fill-out rounded-0 checkout">Checkout</a></p>
                             </div>
                         </div>
                     </li>
+                    {% else %}
+                    <li class="dropdown cart_dropdown"><a class="nav-link cart_trigger" href="{{path('cart')}}"
+                            data-toggle="dropdown"><i class="linearicons-cart"></i><span class="cart_count">0</span></a>
+                        <div class="cart_box dropdown-menu dropdown-menu-right">
+                        </div>
+                    </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>

@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\Admin\ProductCrudController;
+use App\Entity\Carrier;
 use App\Entity\Category;
 use App\Entity\Product;
 use Symfony\Component\Routing\Annotation\Route;
@@ -47,5 +48,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Category', 'fas fa-list', Category::class);
         yield MenuItem::linkToCrud('Product', 'fa-solid fa-shop', Product::class);
+        yield MenuItem::linkToCrud('Carrier', 'fa-solid fa-truck', Carrier::class);
     }
 }

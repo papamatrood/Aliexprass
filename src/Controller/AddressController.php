@@ -39,6 +39,8 @@ class AddressController extends AbstractController
 
             $addressRepository->save($address, true);
 
+            if(isset($cart['products'])) return $this->redirectToRoute('checkout');
+
             return $this->redirectToRoute('account', [], Response::HTTP_SEE_OTHER);
         }
 
