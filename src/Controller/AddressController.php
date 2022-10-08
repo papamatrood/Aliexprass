@@ -7,6 +7,7 @@ use App\Form\AddressType;
 use App\Repository\AddressRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,7 +28,7 @@ class AddressController extends AbstractController
     {
         $user = $this->getUser();
 
-        $fullName = $user->getFirstname() . ' ' .$user->getLastname();
+        $fullName = $user->getFirstname() . ' ' . $user->getLastname();
         $address = new Address();
         $address
             ->setFullName($fullName)
@@ -39,7 +40,7 @@ class AddressController extends AbstractController
 
             $addressRepository->save($address, true);
 
-            if(isset($cart['products'])) return $this->redirectToRoute('checkout');
+            if (isset($cart['products'])) return $this->redirectToRoute('checkout');
 
             return $this->redirectToRoute('account', [], Response::HTTP_SEE_OTHER);
         }
@@ -50,22 +51,24 @@ class AddressController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_address_show', methods: ['GET'])]
-    public function show(Address $address): Response
-    {
-        return $this->render('address/show.html.twig', [
-            'address' => $address,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_address_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Address $address, AddressRepository $addressRepository): Response
+    #[Route('/{id}/edit', name: 'address_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Address $address, RequestStack $requestStack, AddressRepository $addressRepository): Response
     {
         $form = $this->createForm(AddressType::class, $address);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $addressRepository->save($address, true);
+
+            $session = $requestStack->getSession();
+
+            if (!empty($session->get('checkoutData'))) {
+                $data = $session->get('checkoutData');
+                $data['address'] = $address;
+
+                $session->set('checkoutData', $data);
+                return $this->redirectToRoute('checkout_confirm');
+            }
 
             return $this->redirectToRoute('account', [], Response::HTTP_SEE_OTHER);
         }
@@ -76,7 +79,7 @@ class AddressController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_address_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'address_delete', methods: ['POST'])]
     public function delete(Request $request, Address $address, AddressRepository $addressRepository): Response
     {
         if ($this->isCsrfTokenValid('delete' . $address->getId(), $request->request->get('_token'))) {

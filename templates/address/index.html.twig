@@ -131,9 +131,8 @@
 
                                         </address>
                                         <div class="btn-group">
-                                            <a href="" class="btn btn-success">Edit</a>
-                                            <a href="" class="btn btn-success">Delete</a>
-
+                                            <a href="{{path('address_edit', {'id' : address.id})}}" class="btn btn-success">Edit</a>
+                                            {{ include('address/_delete_form.html.twig') }}
                                         </div>
 
                                     </div>

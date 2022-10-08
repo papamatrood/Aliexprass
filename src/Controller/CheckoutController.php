@@ -2,12 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\CheckoutType;
 use App\Services\CartService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Services\OrderService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/checkout')]
 class CheckoutController extends AbstractController
@@ -42,7 +45,7 @@ class CheckoutController extends AbstractController
     }
 
     #[Route('/confirm', name: 'checkout_confirm')]
-    public function checkoutConfirm(Request $request): Response
+    public function checkoutConfirm(Request $request, RequestStack $requestStack, OrderService $orderService): Response
     {
         $cart = $this->cartService->getFullCart();
         if (!isset($cart['products'])) return $this->redirectToRoute('product');
@@ -59,15 +62,26 @@ class CheckoutController extends AbstractController
 
         $form = $this->createForm(CheckoutType::class, null, ['user' => $user]);
         $form->handleRequest($request);
+        $session = $requestStack->getSession();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->getData();
+
+        if (($form->isSubmitted() && $form->isValid()) || !empty($session->get('checkoutData'))) {
+            if (!empty($session->get('checkoutData'))) {
+                $data = $session->get('checkoutData');
+            } else {
+                $data = $form->getData();
+                $session->set('checkoutData', $data);
+            }
+
+            $cart['checkout'] = $data;
+            $id = $orderService->saveCart($cart, $user);
         }
-
-        return $this->render('checkout/confirm.html.twig', [
+        
+        return $this->render('checkout/checkout.html.twig', [
             'cart' => $cart,
             'data' => $data,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'id' => $id
         ]);
     }
 }

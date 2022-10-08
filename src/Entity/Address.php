@@ -160,6 +160,7 @@ class Address
         return  $this->fullName . '[SPR]' .
             $this->country  . '[SPR]' .
             $this->city  . '[SPR]' .
+            $this->address  . '[SPR]' .
             $this->phone;
     }
 }

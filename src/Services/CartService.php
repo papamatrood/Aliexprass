@@ -62,6 +62,7 @@ class CartService
     public function removeCart(): void
     {
         $this->session->set('cart', []);
+        $this->session->set('cartData', []);
     }
 
     public function updateCart(array $cart): void
